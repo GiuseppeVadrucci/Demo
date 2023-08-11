@@ -15,7 +15,7 @@ public class Balance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long balanceId;
     private String date;
-    private String balance;
+    private String accountBalance;
     private String availableBalance;
     private String currency;
 

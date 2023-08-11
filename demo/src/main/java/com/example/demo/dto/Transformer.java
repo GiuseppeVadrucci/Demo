@@ -30,7 +30,7 @@ public class Transformer {
 
     public static Balance transformBalance(BalanceDto dto) {
         Balance entity = new Balance();
-        entity.setBalance(dto.getBalance());
+        entity.setAccountBalance(dto.getBalance());
         entity.setAvailableBalance(dto.getAvailableBalance());
         entity.setCurrency(dto.getCurrency());
         entity.setDate(dto.getDate());
