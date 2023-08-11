@@ -1,0 +1,13 @@
+package com.example.demo.dao;
+
+import com.example.demo.entity.Balance;
+import com.example.demo.entity.Transaction;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+public interface BalanceRepository extends JpaRepository<Balance, Long> {
+
+    @Override
+    <S extends Balance> S save(S entity);
+}
+
