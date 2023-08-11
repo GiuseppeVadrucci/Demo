@@ -1,7 +1,7 @@
 package com.example.demo.logic;
 
 import com.example.demo.dao.BalanceRepository;
-import com.example.demo.dto.DtoToEntity;
+import com.example.demo.dto.Transformer;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.service.BalancesService;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class BalancesImpl implements BalancesService {
                 balanceUri, HttpMethod.GET, requestEntity, ResponseDto.class, accountId);
         logger.info("get balance");
         Optional.ofNullable(response.getBody())
-                .ifPresent(balance -> balanceRepository.save(DtoToEntity.transformBalance(
+                .ifPresent(balance -> balanceRepository.save(Transformer.transformBalance(
                         balance.getPayload())));
         logger.info("save balance");
         return response.getBody();

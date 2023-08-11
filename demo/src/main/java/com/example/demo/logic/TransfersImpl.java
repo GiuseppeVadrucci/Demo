@@ -33,7 +33,7 @@ public class TransfersImpl implements TransfersService {
                 transferUrl, HttpMethod.POST, requestEntity, ResponseTransferDto.class,
                 accountId);
         logger.info("transfer");
-        Transfer transfer = DtoToEntity.transformTransfer(dto);
+        Transfer transfer = Transformer.transformTransfer(dto);
         Optional.of(response.getStatusCode())
                 .filter(HttpStatus.OK::equals)
                 .ifPresent(el -> transferRepository.save(transfer));
