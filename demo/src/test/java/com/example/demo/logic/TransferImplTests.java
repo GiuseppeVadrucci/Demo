@@ -6,6 +6,7 @@ import com.example.demo.dto.CreditorDto;
 import com.example.demo.dto.ResponseTransferDto;
 import com.example.demo.dto.TransferDto;
 import com.example.demo.entity.Transfer;
+import com.example.demo.exceptions.DemoExceptionUnchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,16 +36,30 @@ class TransferImplTests {
     @InjectMocks
     private TransfersImpl transfers = new TransfersImpl();
 
+
     @Test
-    void getBalance() {
+    void getTransfer() {
         ResponseTransferDto dto = new ResponseTransferDto();
         dto.setPayload(new TransferDto(new CreditorDto("name", new AccountDto()),
                 "test", "test", "test", "test"));
-        ResponseEntity<ResponseTransferDto> response = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
+        ResponseEntity<ResponseTransferDto> mResponse = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
-                .thenReturn(response);
-        ResponseEntity<ResponseTransferDto> responseTransferDto = transfers.post(1234L, dto.getPayload());
-        assertEquals(Objects.requireNonNull(responseTransferDto.getBody()).getPayload(),
-                Objects.requireNonNull(response.getBody()).getPayload());
+                .thenReturn(mResponse);
+        ResponseEntity<ResponseTransferDto> response = transfers.post(1234L, dto.getPayload());
+        assertEquals(Objects.requireNonNull(response.getBody()).getPayload(),
+                Objects.requireNonNull(mResponse.getBody()).getPayload());
     }
+
+    @Test
+    void getTransferEx() {
+        ResponseTransferDto dto = new ResponseTransferDto();
+        dto.setPayload(new TransferDto(new CreditorDto("name", new AccountDto()),
+                "test", "test", "test", "test"));
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
+                .thenThrow(new RuntimeException());
+        assertThrowsExactly(DemoExceptionUnchecked.class, () ->
+                transfers.post(1234L, dto.getPayload()));
+    }
+
+
 }

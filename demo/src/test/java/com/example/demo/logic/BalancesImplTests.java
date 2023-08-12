@@ -4,6 +4,7 @@ import com.example.demo.dao.BalanceRepository;
 import com.example.demo.dto.BalanceDto;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.entity.Balance;
+import com.example.demo.exceptions.DemoExceptionUnchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,5 +44,14 @@ class BalancesImplTests {
         ResponseEntity<ResponseDto> responseDto = balances.get(1234L);
         assertEquals(Objects.requireNonNull(responseDto.getBody()).getPayload(),
                 Objects.requireNonNull(response.getBody()).getPayload());
+
+    }
+
+    @Test
+    void getBalanceEx() {
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
+                .thenThrow(new RuntimeException());
+        assertThrowsExactly(DemoExceptionUnchecked.class, () ->
+                balances.get(1234L));
     }
 }

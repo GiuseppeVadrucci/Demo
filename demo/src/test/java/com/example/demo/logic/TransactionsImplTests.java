@@ -5,7 +5,7 @@ import com.example.demo.dto.ResponseTransactionDto;
 import com.example.demo.dto.TransactionDto;
 import com.example.demo.dto.TypeDto;
 import com.example.demo.entity.Transaction;
-import com.example.demo.exceptions.DemoException;
+import com.example.demo.exceptions.DemoExceptionUnchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,15 +36,23 @@ class TransactionsImplTests {
     private TransactionsImpl transactionImpl = new TransactionsImpl();
 
     @Test
-    void getBalance() throws DemoException {
+    void getTransactions() {
         ResponseTransactionDto dto = new ResponseTransactionDto();
         dto.setPayload(new TransactionDto("test", "test", "test", "test",
                 new TypeDto(), "test", "test", "test"));
-        ResponseEntity<ResponseTransactionDto> mResponse = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
+        ResponseEntity<ResponseTransactionDto> mockedResponse = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class)))
-                .thenReturn(mResponse);
+                .thenReturn(mockedResponse);
         ResponseEntity<ResponseTransactionDto> response = transactionImpl.getTransactions(1234L);
-        assertEquals(Objects.requireNonNull(response.getBody()).getPayload(),
+        assertEquals(Objects.requireNonNull(mockedResponse.getBody()).getPayload(),
                 Objects.requireNonNull(response.getBody()).getPayload());
+    }
+
+    @Test
+    void getBalanceEx() {
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
+                .thenThrow(new RuntimeException());
+        assertThrowsExactly(DemoExceptionUnchecked.class, () ->
+                transactionImpl.getTransactions(1234L));
     }
 }
