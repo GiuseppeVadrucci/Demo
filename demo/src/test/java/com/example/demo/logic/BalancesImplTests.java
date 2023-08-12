@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,17 +30,17 @@ class BalancesImplTests {
     @Mock
     private RestTemplate restTemplate;
     @InjectMocks
-    private BalancesImpl balances = new BalancesImpl();
+    private BalancesImpl balances;
 
     @Test
     void getBalance() {
         ResponseDto dto = new ResponseDto();
         dto.setPayload(new BalanceDto("test", "test", "test", "test"));
         ResponseEntity<ResponseDto> response = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
-        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyString()))
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
                 .thenReturn(response);
-        ResponseDto responseDto = balances.get("accountId");
-        assertEquals(responseDto.getPayload(),
+        ResponseEntity<ResponseDto> responseDto = balances.get(1234L);
+        assertEquals(Objects.requireNonNull(responseDto.getBody()).getPayload(),
                 Objects.requireNonNull(response.getBody()).getPayload());
     }
 }

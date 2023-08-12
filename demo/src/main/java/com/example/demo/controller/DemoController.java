@@ -10,6 +10,7 @@ import com.example.demo.service.TransfersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,24 +30,23 @@ public class DemoController {
         this.transactionsService = transactionsService;
     }
 
-
     @GetMapping("/{accountId}/getBalance")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseDto getBalance(@PathVariable String accountId) {
+    public ResponseEntity<ResponseDto> getBalance(@PathVariable Long accountId) {
         logger.info("getBalance api");
         return balancesService.get(accountId);
     }
 
     @PostMapping("/{accountId}/transfer")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseTransferDto transfer(@PathVariable String accountId, TransferDto transfer) {
+    public ResponseEntity<ResponseTransferDto> transfer(@PathVariable Long accountId, TransferDto transfer) {
         logger.info("transfer api");
         return transfersService.post(accountId, transfer);
     }
 
     @GetMapping("/getTransactions")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseTransactionDto getTransactions(@RequestParam String accountId) {
+    public ResponseEntity<ResponseTransactionDto> getTransactions(@RequestParam Long accountId) {
         logger.info("getTransactions api");
         return transactionsService.getTransactions(accountId);
     }

@@ -1,8 +1,9 @@
 package com.example.demo.logic;
 
 import com.example.demo.dao.BalanceRepository;
-import com.example.demo.dto.Transformer;
 import com.example.demo.dto.ResponseDto;
+import com.example.demo.dto.Transformer;
+import com.example.demo.exceptions.DemoExceptionUnchecked;
 import com.example.demo.service.BalancesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,25 +20,29 @@ public class BalancesImpl implements BalancesService {
     Logger logger = LoggerFactory.getLogger(BalancesImpl.class);
 
     @Autowired
-    private BalanceRepository balanceRepository;
-
-
-    @Autowired
     RestTemplate restTemplate;
-
+    @Autowired
+    BalanceRepository balanceRepository;
 
     @Override
-    public ResponseDto get(String accountId) {
+    public ResponseEntity<ResponseDto> get(Long accountId) {
         String balanceUri = "https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/{accountId}/balance";
         HttpEntity<Void> requestEntity = new HttpEntity<>(addHeader());
-        ResponseEntity<ResponseDto> response = restTemplate.exchange(
-                balanceUri, HttpMethod.GET, requestEntity, ResponseDto.class, accountId);
-        logger.info("get balance");
-        Optional.ofNullable(response.getBody())
-                .ifPresent(balance -> balanceRepository.save(Transformer.transformBalance(
-                        balance.getPayload())));
-        logger.info("save balance");
-        return response.getBody();
+        try {
+            ResponseEntity<ResponseDto> response = restTemplate.exchange(
+                    balanceUri, HttpMethod.GET, requestEntity, ResponseDto.class, accountId);
+            String info = response.getBody() != null
+                    ? "balance of " + accountId.toString() : "not found for  " + accountId;
+            Optional.ofNullable(response.getBody()).ifPresent(
+                    balance -> balanceRepository.save(Transformer.transformBalance(
+                            balance.getPayload())));
+            logger.info(info);
+            return response;
+
+        } catch (RuntimeException e) {
+            throw new DemoExceptionUnchecked("custom error message:" +
+                    "caught a runtime exception", e);
+        }
     }
 
     private HttpHeaders addHeader() {
