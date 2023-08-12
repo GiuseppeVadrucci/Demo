@@ -31,9 +31,11 @@ public class TransactionsImpl implements TransactionsService {
     RestTemplate restTemplate;
 
     @Override
-    public ResponseEntity<ResponseTransactionDto> getTransactions(Long accountId) {
+    public ResponseEntity<ResponseTransactionDto> getTransactions(Long accountId, String fromAccountingDate, String toAccountingDate) {
         String transactionsUri = "https://sandbox.platfr.io/api/gbs/banking/v4.0/accounts/"
-                + accountId + "/transactions?fromAccountingDate=2019-01-01&toAccountingDate=2019-12-01";
+                + accountId + "/transactions?"
+                .concat("fromAccountingDate=" + fromAccountingDate)
+                .concat("&toAccountingDate=" + toAccountingDate);
         HttpEntity<Void> requestEntity = new HttpEntity<>(addHeader());
         try {
             ResponseEntity<ResponseTransactionDto> response = restTemplate.exchange(
@@ -42,9 +44,9 @@ public class TransactionsImpl implements TransactionsService {
             String info = response.getBody() != null
                     ? "transactions of ".concat(accountId.toString()) : "not found for  " + accountId;
             Optional.ofNullable(response.getBody())
-                    .ifPresent(transaction -> transactionsRepository.saveAndFlush(
-                            Transformer.transformTransaction(
-                                    transaction.getPayload())));
+                    .ifPresent(transaction -> transactionsRepository.saveAllAndFlush(
+                            response.getBody().getPayload().stream()
+                                    .map(Transformer::transformTransaction).toList()));
             logger.info(info);
             return response;
         } catch (RuntimeException e) {
@@ -52,7 +54,6 @@ public class TransactionsImpl implements TransactionsService {
                     "caught a runtime exception", e);
         }
     }
-
 
     private HttpHeaders addHeader() {
         return getHttpHeaders(logger);

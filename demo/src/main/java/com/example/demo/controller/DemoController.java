@@ -46,8 +46,10 @@ public class DemoController {
 
     @GetMapping("/getTransactions")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseTransactionDto> getTransactions(@RequestParam Long accountId) {
+    public ResponseEntity<ResponseTransactionDto> getTransactions(@RequestParam Long accountId,
+                                                                  @RequestParam String fromAccountingDate,
+                                                                  @RequestParam String toAccountingDate) {
         logger.info("getTransactions api");
-        return transactionsService.getTransactions(accountId);
+        return transactionsService.getTransactions(accountId, fromAccountingDate, toAccountingDate);
     }
 }

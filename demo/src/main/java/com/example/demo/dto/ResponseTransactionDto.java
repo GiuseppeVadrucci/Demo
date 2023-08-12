@@ -14,7 +14,7 @@ import java.util.List;
 public class ResponseTransactionDto {
     private String status;
     private List<String> error;
-    private TransactionDto payload;
+    private List<TransactionDto> payload;
 }
 
 

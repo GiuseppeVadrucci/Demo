@@ -6,5 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface TransactionsService {
-    ResponseEntity<ResponseTransactionDto> getTransactions(Long accountId);
+    ResponseEntity<ResponseTransactionDto> getTransactions(Long accountId, String fromAccountingDate,
+                                                           String toAccountingDate);
 }

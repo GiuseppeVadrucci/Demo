@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,14 +40,17 @@ class TransactionsImplTests {
     @Test
     void getTransactions() {
         ResponseTransactionDto dto = new ResponseTransactionDto();
-        dto.setPayload(new TransactionDto("test", "test", "test", "test",
+        List<TransactionDto> list = new ArrayList<>();
+        list.add(new TransactionDto("test", "test", "test", "test",
                 new TypeDto(), "test", "test", "test"));
+
         ResponseEntity<ResponseTransactionDto> mockedResponse = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class)))
                 .thenReturn(mockedResponse);
-        ResponseEntity<ResponseTransactionDto> response = transactionImpl.getTransactions(1234L);
+        ResponseEntity<ResponseTransactionDto> response = transactionImpl.getTransactions(
+                1234L, "test", "test");
         assertEquals(Objects.requireNonNull(mockedResponse.getBody()).getPayload(),
-                Objects.requireNonNull(response.getBody()).getPayload());
+                Objects.requireNonNull(response.getBody().getPayload().get(0)));
     }
 
     @Test
@@ -53,6 +58,6 @@ class TransactionsImplTests {
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
                 .thenThrow(new RuntimeException());
         assertThrowsExactly(DemoExceptionUnchecked.class, () ->
-                transactionImpl.getTransactions(1234L));
+                transactionImpl.getTransactions(1234L, "test", "test"));
     }
 }
