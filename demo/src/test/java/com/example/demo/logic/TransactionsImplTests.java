@@ -43,14 +43,14 @@ class TransactionsImplTests {
         List<TransactionDto> list = new ArrayList<>();
         list.add(new TransactionDto("test", "test", "test", "test",
                 new TypeDto(), "test", "test", "test"));
-
+        dto.setPayload(list);
         ResponseEntity<ResponseTransactionDto> mockedResponse = new ResponseEntity<>(dto, HttpStatusCode.valueOf(200));
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class)))
                 .thenReturn(mockedResponse);
         ResponseEntity<ResponseTransactionDto> response = transactionImpl.getTransactions(
                 1234L, "test", "test");
-        assertEquals(Objects.requireNonNull(mockedResponse.getBody()).getPayload(),
-                Objects.requireNonNull(response.getBody().getPayload().get(0)));
+        assertEquals(Objects.requireNonNull(mockedResponse.getBody()).getPayload().get(0),
+                Objects.requireNonNull(Objects.requireNonNull(response.getBody()).getPayload().get(0)));
     }
 
     @Test
