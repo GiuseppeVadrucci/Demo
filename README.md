@@ -1,7 +1,7 @@
 # Demo
 Demo api rest
-This poc project exposes three apis and saves the results in a postgres db.
-Just install a local postgres db and run the application.
+This poc project exposes three apis and saves the results in a postgresql db.
+Just install a local postgresql db and run the application.
 
 The structure of the project is:
 -configuration: configuration class -controller: controller that exposes the apis -repository: to persist data in the db
