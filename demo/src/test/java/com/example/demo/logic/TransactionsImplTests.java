@@ -5,13 +5,13 @@ import com.example.demo.dto.ResponseTransactionDto;
 import com.example.demo.dto.TransactionDto;
 import com.example.demo.dto.TypeDto;
 import com.example.demo.entity.Transaction;
-import com.example.demo.exceptions.DemoExceptionUnchecked;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,10 +53,18 @@ class TransactionsImplTests {
     }
 
     @Test
-    void getBalanceEx() {
+    void getTransactionsError() {
+        ResponseTransactionDto dto = new ResponseTransactionDto();
+        dto.setErrorCode("customErrorCode");
+        ResponseEntity<ResponseTransactionDto> mockedResponse = new ResponseEntity<>(dto, HttpStatus.INTERNAL_SERVER_ERROR);
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
                 .thenThrow(new RuntimeException());
-        assertThrowsExactly(DemoExceptionUnchecked.class, () ->
-                transactionImpl.getTransactions(1234L, "test", "test"));
+        ResponseEntity<ResponseTransactionDto> response = transactionImpl.getTransactions(
+                1234L, "test", "test");
+        assertEquals(Objects.requireNonNull(mockedResponse.getBody()).getErrorCode(),
+                Objects.requireNonNull(response.getBody()).getErrorCode());
+        assertEquals(mockedResponse.getStatusCode(),
+                response.getStatusCode());
+
     }
 }

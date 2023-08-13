@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorDto {
-    private String error;
-    private String code;
-    private String message;
+    private String demoError;
+    private String errorCode;
+    private String errorMessage;
 }

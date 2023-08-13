@@ -33,15 +33,25 @@ public class BalancesImpl implements BalancesService {
                     balanceUri, HttpMethod.GET, requestEntity, ResponseDto.class, accountId);
             String info = response.getBody() != null
                     ? "balance of " + accountId.toString() : "not found for  " + accountId;
-            Optional.ofNullable(response.getBody()).ifPresent(
-                    balance -> balanceRepository.save(Transformer.transformBalance(
-                            balance.getPayload())));
+            saveBalance(response);
             logger.info(info);
             return response;
 
         } catch (RuntimeException e) {
-            throw new DemoExceptionUnchecked("custom error message:" +
-                    "caught a runtime exception", e);
+            ResponseDto response = new ResponseDto();
+            response.setDemoError(e.getMessage());
+            response.setErrorCode("customErrorCode");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void saveBalance(ResponseEntity<ResponseDto> response) {
+        try {
+            Optional.ofNullable(response.getBody()).ifPresent(
+                    balance -> balanceRepository.save(Transformer.transformBalance(
+                            balance.getPayload())));
+        } catch (RuntimeException e) {
+            throw new DemoExceptionUnchecked("custom error message", e);
         }
     }
 

@@ -8,10 +8,7 @@ import com.example.demo.service.TransactionsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,15 +40,26 @@ public class TransactionsImpl implements TransactionsService {
                     ResponseTransactionDto.class);
             String info = response.getBody() != null
                     ? "transactions of ".concat(accountId.toString()) : "not found for  " + accountId;
+            saveTransactions(response);
+            logger.info(info);
+            return response;
+        } catch (RuntimeException e) {
+            ResponseTransactionDto response = new ResponseTransactionDto();
+            response.setDemoError(e.getMessage());
+            response.setErrorCode("customErrorCode");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void saveTransactions(ResponseEntity<ResponseTransactionDto> response) {
+        try {
             Optional.ofNullable(response.getBody())
                     .ifPresent(transaction -> transactionsRepository.saveAllAndFlush(
                             response.getBody().getPayload().stream()
                                     .map(Transformer::transformTransaction).toList()));
-            logger.info(info);
-            return response;
         } catch (RuntimeException e) {
-            throw new DemoExceptionUnchecked("custom error message:" +
-                    "caught a runtime exception", e);
+            throw new DemoExceptionUnchecked("custom error message", e);
+
         }
     }
 

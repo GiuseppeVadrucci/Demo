@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -48,6 +49,20 @@ class BalancesImplTests {
     }
 
     @Test
+    void getBalanceError() {
+        ResponseDto dto = new ResponseDto();
+        dto.setErrorCode("customErrorCode");
+        ResponseEntity<ResponseDto> response = new ResponseEntity<>(dto, HttpStatus.INTERNAL_SERVER_ERROR);
+        when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
+                .thenThrow(new RuntimeException());
+        ResponseEntity<ResponseDto> responseDto = balances.get(1234L);
+        assertEquals(Objects.requireNonNull(responseDto.getBody()).getErrorCode(),
+                Objects.requireNonNull(response.getBody()).getErrorCode());
+        assertEquals(responseDto.getStatusCode(),
+                response.getStatusCode());
+
+    }
+
     void getBalanceEx() {
         when(restTemplate.exchange(anyString(), any(), any(), any(Class.class), anyLong()))
                 .thenThrow(new RuntimeException());

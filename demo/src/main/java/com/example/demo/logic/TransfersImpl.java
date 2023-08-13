@@ -39,14 +39,24 @@ public class TransfersImpl implements TransfersService {
             String info = response.getBody() != null
                     ? "transfer of ".concat(accountId.toString()) : "not found for  " + accountId;
             Transfer transfer = Transformer.transformTransfer(dto);
-            Optional.of(response.getStatusCode())
-                    .filter(HttpStatus.OK::equals)
-                    .ifPresent(el -> transferRepository.save(transfer));
+            saveTransfer(response, transfer);
             logger.info(info);
             return response;
         } catch (RuntimeException e) {
-            throw new DemoExceptionUnchecked("custom error message:" +
-                    "caught a runtime exception", e);
+            ResponseTransferDto response = new ResponseTransferDto();
+            response.setDemoError(e.getMessage());
+            response.setErrorCode("customErrorCode");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void saveTransfer(ResponseEntity<ResponseTransferDto> response, Transfer transfer) {
+        try {
+            Optional.of(response.getStatusCode())
+                    .filter(HttpStatus.OK::equals)
+                    .ifPresent(el -> transferRepository.save(transfer));
+        } catch (RuntimeException e) {
+            throw new DemoExceptionUnchecked("custom error message", e);
         }
     }
 

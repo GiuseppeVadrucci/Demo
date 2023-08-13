@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseTransactionDto {
+public class ResponseTransactionDto extends ErrorDto {
     private String status;
     private List<String> error;
     private List<TransactionDto> payload;
