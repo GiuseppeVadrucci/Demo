@@ -1,11 +1,11 @@
 package com.example.demo.logic;
 
-import com.example.demo.dao.TransferRepository;
 import com.example.demo.dto.ResponseTransferDto;
 import com.example.demo.dto.TransferDto;
 import com.example.demo.dto.Transformer;
 import com.example.demo.entity.Transfer;
 import com.example.demo.exceptions.DemoExceptionUnchecked;
+import com.example.demo.repository.TransferRepository;
 import com.example.demo.service.TransfersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,10 +1,10 @@
 package com.example.demo.logic;
 
-import com.example.demo.dao.TransactionsRepository;
 import com.example.demo.dto.ResponseTransactionDto;
 import com.example.demo.dto.TransactionDto;
 import com.example.demo.dto.TypeDto;
 import com.example.demo.entity.Transaction;
+import com.example.demo.repository.TransactionsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

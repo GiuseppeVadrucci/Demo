@@ -1,10 +1,10 @@
 package com.example.demo.logic;
 
-import com.example.demo.dao.BalanceRepository;
 import com.example.demo.dto.BalanceDto;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.entity.Balance;
 import com.example.demo.exceptions.DemoExceptionUnchecked;
+import com.example.demo.repository.BalanceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

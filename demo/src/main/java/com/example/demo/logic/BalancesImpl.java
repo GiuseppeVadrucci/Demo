@@ -1,9 +1,9 @@
 package com.example.demo.logic;
 
-import com.example.demo.dao.BalanceRepository;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.dto.Transformer;
 import com.example.demo.exceptions.DemoExceptionUnchecked;
+import com.example.demo.repository.BalanceRepository;
 import com.example.demo.service.BalancesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

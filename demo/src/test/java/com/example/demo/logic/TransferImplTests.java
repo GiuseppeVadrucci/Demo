@@ -1,11 +1,11 @@
 package com.example.demo.logic;
 
-import com.example.demo.dao.TransferRepository;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.CreditorDto;
 import com.example.demo.dto.ResponseTransferDto;
 import com.example.demo.dto.TransferDto;
 import com.example.demo.entity.Transfer;
+import com.example.demo.repository.TransferRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
